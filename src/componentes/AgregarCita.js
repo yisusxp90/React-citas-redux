@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux';
+import uuid from 'uuid';
+import { agregarCita } from '../actions/citasActions'; 
+import { mostrarError } from '../actions/errorActions'; 
 
 class AgregarCita extends Component {
+
+    componentWillMount(){
+        this.props.mostrarError(false);
+    }
 
     nombreMascotaRef = React.createRef();
     propietarioRef = React.createRef();
@@ -11,17 +19,25 @@ class AgregarCita extends Component {
     crearNuevacita = (e) =>{
         e.preventDefault();
         const nuevaCita = {
+            id: uuid(),
             mascota : this.nombreMascotaRef.current.value,
             propietario : this.propietarioRef.current.value,
             fecha : this.fechaRef.current.value,
             hora : this.horaRef.current.value,
             sintomas : this.sintomasRef.current.value
         }
-        this.props.crearCita(nuevaCita);
-        e.currentTarget.reset();
+        if(nuevaCita.mascota === '' || nuevaCita.propietario === '' || nuevaCita.fecha === '' || nuevaCita.hora === '' || nuevaCita.sintomas === '' ){
+            this.props.mostrarError(true);
+        }else{
+            this.props.agregarCita(nuevaCita);
+            e.currentTarget.reset();
+            this.props.mostrarError(false);
+        }
+
     }
 
     render() {
+        const existeError = this.props.error;
       return (
             <div className="card mt-5">
                 <div className="card-body">
@@ -64,10 +80,14 @@ class AgregarCita extends Component {
                             </div>
                         </div>
                     </form>
+                    {existeError ? <div className="alert alert-danger text-center">Todos los campos son obligatorios</div> : ''}
                 </div>
             </div>
       );
     }
   }
-  
-  export default AgregarCita;
+  const mapStateToProps = state => ({
+    citas: state.citas.citas,
+    error: state.error.error
+  })
+  export default connect(mapStateToProps, {agregarCita, mostrarError}) (AgregarCita);

@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
+import { connect} from 'react-redux';
+import { borrarCita } from '../actions/citasActions';
 
 class Cita extends Component {
-
+    eliminarCita = () => {
+        this.props.borrarCita(this.props.info.id);
+    }
     render() {
         const {fecha, hora, mascota, propietario, sintomas} = this.props.info;
       return (
@@ -15,7 +19,7 @@ class Cita extends Component {
                     {sintomas}
                 </p>
 
-                <button onClick={() => this.props.borrarCita(this.props.idCita)} className="btn btn-danger">Borrar &times;</button>
+                <button onClick={this.eliminarCita} className="btn btn-danger">Borrar &times;</button>
             </div>
         </div>
   
@@ -23,4 +27,4 @@ class Cita extends Component {
     }
   }
   
-  export default Cita;
+  export default connect(null, {borrarCita}) (Cita);

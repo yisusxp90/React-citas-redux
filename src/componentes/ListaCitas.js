@@ -1,7 +1,20 @@
 import React, { Component } from 'react';
 import Cita from './Cita';
 
+//redux
+import { connect} from 'react-redux';
+import { obtenerCitas } from '../actions/citasActions';
+
+import store from '../store';
+
+store.subscribe( () => {
+    localStorage.setItem('citas', JSON.stringify(store.getState()));
+})
+
 class ListaCitas extends Component {
+    componentDidMount() {
+        this.props.obtenerCitas();
+    }
 
     render() {
         const citas = this.props.citas;
@@ -26,4 +39,7 @@ class ListaCitas extends Component {
     }
   }
   
-  export default ListaCitas;
+  const mapStateToProps = state => ({
+      citas: state.citas.citas
+  })
+  export default connect(mapStateToProps, {obtenerCitas}) (ListaCitas);
